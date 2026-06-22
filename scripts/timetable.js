@@ -21,7 +21,10 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             contentArea.innerHTML = "<p>データを取得中...</p>";
             
-            const response = await fetch(GAS_API_URL);
+            const response = await fetch(GAS_API_URL, {
+                method: "GET",
+                credentials: "include" // 💡組織内認証を通すためにこれが必要になります
+            });
             if (!response.ok) throw new Error("ネットワークエラーが発生しました");
             
             const data = await response.json(); // GAS側からJSONで返ってくる想定
