@@ -33,23 +33,30 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // 表を作成して表示する関数
+    // 表を作成して表示する関数（横並びバージョン）
     function renderTimetable(data) {
         let html = `<p style="font-weight: bold; margin-bottom: 10px; font-size: 15px; text-align: center;">本日（${data.day}）の時間割</p>`;
-        html += "<table style='width:100%; border-collapse: collapse; font-size:13px;'>";
         
-        // ヘッダー行
-        html += "<tr style='background: rgba(0,0,0,0.05);'><th style='border:1px solid rgba(128,128,128,0.3); padding:6px; width:25%;'>時限</th><th style='border:1px solid rgba(128,128,128,0.3); padding:6px; text-align:left;'>授業内容</th></tr>";
-
-        // 1時間目〜7時間目
-        data.schedule.forEach((subject, index) => {
-            html += `<tr>
-                <td style='border:1px solid rgba(128,128,128,0.2); padding:6px; text-align:center; font-weight:bold;'>${index + 1}限</td>
-                <td style='border:1px solid rgba(128,128,128,0.2); padding:6px; text-align:left;'>${subject}</td>
-            </tr>`;
+        // 💡 画面幅からはみ出した場合に横スクロールできるようにdivで囲む
+        html += "<div style='overflow-x: auto; width: 100%;'>";
+        html += "<table style='width:100%; border-collapse: collapse; font-size:13px; text-align:center;'>";
+        
+        // 1行目：ヘッダー（1限〜7限を横に並べる）
+        html += "<tr style='background: rgba(0,0,0,0.05);'>";
+        data.schedule.forEach((_, index) => {
+            html += `<th style='border:1px solid rgba(128,128,128,0.3); padding:6px; min-width:45px;'>${index + 1}限</th>`;
         });
+        html += "</tr>";
+
+        // 2行目：授業内容（科目を横に並べる）
+        html += "<tr>";
+        data.schedule.forEach((subject) => {
+            // 文字が長い場合に適切に折り返すよう word-break を設定
+            html += `<td style='border:1px solid rgba(128,128,128,0.2); padding:6px; word-break: break-word;'>${subject}</td>`;
+        });
+        html += "</tr>";
         
-        html += "</table>";
+        html += "</table></div>";
         contentArea.innerHTML = html;
     }
 });
