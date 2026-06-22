@@ -33,26 +33,41 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // 表を作成して表示する関数（横並びバージョン）
+
+    // 表を作成して表示する関数（今日の日付表示＋横並び版）
     function renderTimetable(data) {
-        let html = `<p style="font-weight: bold; margin-bottom: 10px; font-size: 15px; text-align: center;">本日（${data.day}）の時間割</p>`;
+        // 💡 今日の日付（年・月・日）を自動的に取得
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth() + 1;
+        const date = today.getDate();
         
-        // 💡 画面幅からはみ出した場合に横スクロールできるようにdivで囲む
-        html += "<div style='overflow-x: auto; width: 100%;'>";
-        html += "<table style='width:100%; border-collapse: collapse; font-size:13px; text-align:center;'>";
+        // 曜日を「月曜」から「月」に変換してスッキリさせます（例: 月曜 → 月）
+        const shortDay = data.day.replace("曜", "");
         
-        // 1行目：ヘッダー（1限〜7限を横に並べる）
-        html += "<tr style='background: rgba(0,0,0,0.05);'>";
+        // 「2026年6月22日（月）」という文字列を作成
+        const dateString = `${year}年${month}月${date}日（${shortDay}）`;
+
+        // 💡 タイトルの文字を今日の日付に変更
+        let html = `<p style="font-weight: bold; margin-bottom: 10px; font-size: 15px; text-align: center; color: var(--md-sys-color-on-surface, #fff);">${dateString} の時間割</p>`;
+        
+        // はみ出た場合は横スクロールできるようにする
+        html += "<div style='overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch;'>";
+        
+        // CSSの干渉を防ぐテーブル設定
+        html += "<table style='display: table !important; width: 100% !important; border-collapse: collapse !important; font-size: 13px !important; text-align: center !important; table-layout: fixed !important;'>";
+        
+        // 1行目：1限〜7限の見出し
+        html += "<tr style='display: table-row !important; background: rgba(0,0,0,0.05) !important;'>";
         data.schedule.forEach((_, index) => {
-            html += `<th style='border:1px solid rgba(128,128,128,0.3); padding:6px; min-width:45px;'>${index + 1}限</th>`;
+            html += `<th style='display: table-cell !important; border: 1px solid rgba(128,128,128,0.3) !important; padding: 8px !important; font-weight: bold !important; min-width: 45px !important;'>${index + 1}限</th>`;
         });
         html += "</tr>";
 
-        // 2行目：授業内容（科目を横に並べる）
-        html += "<tr>";
+        // 2行目：授業科目
+        html += "<tr style='display: table-row !important;'>";
         data.schedule.forEach((subject) => {
-            // 文字が長い場合に適切に折り返すよう word-break を設定
-            html += `<td style='border:1px solid rgba(128,128,128,0.2); padding:6px; word-break: break-word;'>${subject}</td>`;
+            html += `<td style='display: table-cell !important; border: 1px solid rgba(128,128,128,0.2) !important; padding: 8px !important; word-break: break-all !important; white-space: normal !important; vertical-align: middle !important;'>${subject || "―"}</td>`;
         });
         html += "</tr>";
         
