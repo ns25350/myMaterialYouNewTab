@@ -4,7 +4,12 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const ttCheckbox = document.getElementById("timetableCheckbox");
     const ttClassField = document.getElementById("timetableClassField");
-    const ttSelect = document.getElementById("timetableClassSelect");
+    
+    // 💡 カスタムプルダウンの要素を取得
+    const customSelectButton = document.getElementById("customSelectButton");
+    const customSelectValue = document.getElementById("customSelectValue");
+    const customSelectDropdown = document.getElementById("customSelectDropdown");
+    const customSelectArrow = document.getElementById("customSelectArrow");
 
     const FIREBASE_URL = "https://johou7-275be-default-rtdb.firebaseio.com/timetable.json"; 
     let globalTimetableData = null; 
@@ -13,10 +18,64 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedClass = localStorage.getItem("timetableClass") || "101";     
 
     if(ttCheckbox) ttCheckbox.checked = isEnabled;
-    if(ttSelect) ttSelect.value = savedClass;
+    if(customSelectValue) customSelectValue.innerText = savedClass; // 選択中のクラスを表示
     if(ttClassField) ttClassField.style.display = isEnabled ? "flex" : "none";
     if(container) container.style.display = isEnabled ? "block" : "none";
 
+    // 💡 クラス一覧をJSで作ってドロップダウンに入れる
+    const classList = [
+        "101","102","103","104","105","106","107","108","109","110",
+        "201","202","203","204","205/6文","205理","206理","207","208","209","210",
+        "301","302","303","304","305","306","307","308","309","310"
+    ];
+
+    if (customSelectDropdown) {
+        classList.forEach(cls => {
+            const item = document.createElement("div");
+            item.innerText = cls;
+            item.style.cssText = "padding: 10px 16px; cursor: pointer; font-size: 14px; transition: background 0.2s;";
+            
+            // ホバーで色を変える
+            item.onmouseover = () => item.style.background = "rgba(128, 128, 128, 0.2)";
+            item.onmouseout = () => item.style.background = "transparent";
+            
+            // クラスを選んだ時の処理
+            item.addEventListener("click", () => {
+                customSelectValue.innerText = cls;
+                localStorage.setItem("timetableClass", cls);
+                
+                // メニューを閉じる
+                customSelectDropdown.style.display = "none";
+                customSelectArrow.style.transform = "rotate(0deg)";
+                
+                // 表を更新
+                if (globalTimetableData) {
+                    renderTimetable(globalTimetableData, cls);
+                }
+            });
+            customSelectDropdown.appendChild(item);
+        });
+    }
+
+    // 💡 ボタンを押したらドロップダウンを開閉する
+    if (customSelectButton) {
+        customSelectButton.addEventListener("click", (e) => {
+            e.stopPropagation(); // 他のクリックイベントと衝突させない
+            const isOpen = customSelectDropdown.style.display === "block";
+            customSelectDropdown.style.display = isOpen ? "none" : "block";
+            customSelectArrow.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)"; // 矢印をクルッと回す
+        });
+    }
+
+    // 💡 画面の別の場所を押したらドロップダウンを閉じる
+    document.addEventListener("click", () => {
+        if (customSelectDropdown && customSelectDropdown.style.display === "block") {
+            customSelectDropdown.style.display = "none";
+            customSelectArrow.style.transform = "rotate(0deg)";
+        }
+    });
+
+    // オンオフスイッチの処理
     if(ttCheckbox) {
         ttCheckbox.addEventListener("change", (e) => {
             const checked = e.target.checked;
@@ -26,16 +85,6 @@ document.addEventListener("DOMContentLoaded", () => {
             
             if (checked && !globalTimetableData) {
                 fetchTimetableFromFirebase();
-            }
-        });
-    }
-
-    if(ttSelect) {
-        ttSelect.addEventListener("change", (e) => {
-            const selectedClass = e.target.value;
-            localStorage.setItem("timetableClass", selectedClass);
-            if (globalTimetableData) {
-                renderTimetable(globalTimetableData, selectedClass);
             }
         });
     }
@@ -94,7 +143,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const shortDay = data.day ? data.day.replace("曜", "") : "―";
         const dateString = `${year}年${month}月${date}日（${shortDay}）`;
 
-        // 💡 Firebaseは「/」が使えないので「_」に置き換えて探す
         const searchClass = targetClass.replace("/", "_");
         const scheduleArray = data.schedules[searchClass] || [];
 
