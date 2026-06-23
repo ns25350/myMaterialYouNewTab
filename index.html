@@ -1444,6 +1444,31 @@
                                             </label>
                                         </div>
 
+                                        <div class="ttcont" id="timetableField">
+                                            <div class="texts">
+                                                <div class="bigText" id="timetabletitle">Timetable</div>
+                                                <div class="infoText" id="timetableinfo">Show daily timetable</div>
+                                            </div>
+                                            <label class="switch">
+                                                <input id="timetableCheckbox" type="checkbox">
+                                                <span class="toggle"></span>
+                                            </label>
+                                        </div>
+
+                                        <div class="ttcont" id="timetableClassField" style="display: none; flex-direction: column; align-items: flex-start; padding-top: 0;">
+                                            <div class="infoText" style="margin-bottom: 8px;">Select Class</div>
+                                            <select id="timetableClassSelect" style="width: 100%; padding: 8px; border-radius: 8px; background: transparent; color: inherit; border: 1px solid currentColor; outline: none; font-family: inherit; font-size: 14px; cursor: pointer;">
+                                                <optgroup label="1年生">
+                                                    <option value="101">101</option><option value="102">102</option><option value="103">103</option><option value="104">104</option><option value="105">105</option><option value="106">106</option><option value="107">107</option><option value="108">108</option><option value="109">109</option><option value="110">110</option>
+                                                </optgroup>
+                                                <optgroup label="2年生">
+                                                    <option value="201">201</option><option value="202">202</option><option value="203">203</option><option value="204">204</option><option value="205/6文">205/6文</option><option value="205理">205理</option><option value="206理">206理</option><option value="207">207</option><option value="208">208</option><option value="209">209</option><option value="210">210</option>
+                                                </optgroup>
+                                                <optgroup label="3年生">
+                                                    <option value="301">301</option><option value="302">302</option><option value="303">303</option><option value="304">304</option><option value="305">305</option><option value="306">306</option><option value="307">307</option><option value="308">308</option><option value="309">309</option><option value="310">310</option>
+                                                </optgroup>
+                                            </select>
+                                        </div>
                                         <div class="ttcont">
                                             <div class="texts">
                                                 <div class="bigText" id="userTextTitle">Customizable Text</div>
